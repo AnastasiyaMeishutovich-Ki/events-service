@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.ki.events";
+option java_outer_classname = "Events";
+
+package com.ki.quote;
+
+service EventService {
+  rpc AddEvent (AddEventRequest) returns (AddEventReply) {}
+}
+
+message AddEventRequest {
+  string aggregateId = 1;
+  EventType type = 2;
+  Data data = 3;
+  google.protobuf.StringValue eventIdOverride = 4;   // nullable
+
+  enum EventType {
+    RISK_SAVED = 0;
+    QUOTE_GENERATED = 1;
+  }
+
+  message Data {
+    oneof value {
+      RiskSavedData riskSavedData = 1;
+      QuoteGeneratedData quoteGeneratedData = 2;
+    }
+  }
+
+  message RiskSavedData {
+    string field1 = 1;
+    string field2 = 2;
+  }
+
+  message QuoteGeneratedData {
+    string field1 = 1;
+    string field2 = 2;
+  }
+}
+
+message AddEventReply {
+  Status status = 1;
+  google.protobuf.Int32Value sequenceId = 2;    // nullable
+  google.protobuf.Timestamp timestamp = 3;
+
+  enum Status {
+    CREATED = 0;
+    ALREADY_CREATED = 1;
+    CONFLICT = 2;
+    FAILED = 3;
+  }
+}
+
+
+
