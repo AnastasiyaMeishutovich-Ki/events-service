@@ -25,7 +25,7 @@ class EventGrpcService: EventServiceGrpc.EventServiceImplBase() {
 
         var event:Events.Event
         request?.filters?.typeList.let {
-        val riskSavedData: Events.RiskSavedData = Events.Event.newBuilder().dataBuilder.riskSavedDataBuilder.setField1("field1").setField2("field2").build()
+        val riskSavedData: Events.RiskSavedData = Events.Event.newBuilder().dataBuilder.riskSavedDataBuilder.setField1("field1").setField2(5).build()
         val data = Events.Data.newBuilder().setRiskSavedData(riskSavedData)
             event = Events.Event.newBuilder().setData(data).build()
         }

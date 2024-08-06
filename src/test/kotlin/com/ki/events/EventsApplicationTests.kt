@@ -20,7 +20,7 @@ class EventsApplicationTests {
 
     @Test
     fun shouldAddEvent() {
-        val riskSavedData = Events.Data.newBuilder().riskSavedDataBuilder.setField1("field1").setField2("field2").build()
+        val riskSavedData = Events.Data.newBuilder().riskSavedDataBuilder.setField1("field1").setField2(5).build()
         val data = Events.Data.newBuilder().setRiskSavedData(riskSavedData)
         val req: Events.AddEventRequest = Events.AddEventRequest.newBuilder()
             .setAggregateId("wjekth43jkf")
@@ -50,6 +50,6 @@ class EventsApplicationTests {
         val event: Events.Event = res.eventsList[0]
         assertEquals(event.getType(), Events.EventType.RISK_SAVED)
         assertEquals(event.data.riskSavedData.field1, "field1")
-        assertEquals(event.data.riskSavedData.field2, "field2")
+        assertEquals(event.data.riskSavedData.field2, 5)
     }
 }
