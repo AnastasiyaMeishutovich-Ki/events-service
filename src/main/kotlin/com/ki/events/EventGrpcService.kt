@@ -20,6 +20,22 @@ class EventGrpcService: EventServiceGrpc.EventServiceImplBase() {
             responseObserver.onCompleted()
         }
     }
+
+    override fun getEvents(request: Events.GetEventsRequest?, responseObserver: StreamObserver<Events.GetEventsReply>?) {
+
+        var event:Events.Event
+        request?.filters?.typeList.let {
+        val riskSavedData: Events.RiskSavedData = Events.Event.newBuilder().dataBuilder.riskSavedDataBuilder.setField1("field1").setField2("field2").build()
+        val data = Events.Data.newBuilder().setRiskSavedData(riskSavedData)
+            event = Events.Event.newBuilder().setData(data).build()
+        }
+
+        val reply = Events.GetEventsReply.newBuilder().addEvents(event).build()
+            if (responseObserver != null) {
+            responseObserver.onNext(reply)
+            responseObserver.onCompleted()
+        }
+    }
 }
 
 

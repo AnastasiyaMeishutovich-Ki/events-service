@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
+//import "validate/validate.proto"; // todo?
 
 option java_package = "com.ki.events";
 option java_outer_classname = "Events";
@@ -10,35 +11,40 @@ package com.ki.quote;
 
 service EventService {
   rpc AddEvent (AddEventRequest) returns (AddEventReply) {}
+  rpc GetEvents (GetEventsRequest) returns (GetEventsReply) {}
 }
+
+message GetEventsRequest {
+  EventFilter filters = 1;
+  google.protobuf.Int32Value sequenceId = 2; // nullable
+  google.protobuf.Int32Value max = 3;  // nullable
+}
+
+message EventFilter {
+  repeated EventType type = 1;
+}
+
+message GetEventsReply {
+  repeated Event events = 1;
+}
+
+message Event {
+  string source = 1;
+  string aggregate = 2;
+  string id = 3;
+  google.protobuf.Timestamp  clientCreated = 4;
+  google.protobuf.Timestamp  serverCreated = 5;
+  EventType type = 6;
+  int32 sequence = 7;
+  Data data = 8;
+}
+
 
 message AddEventRequest {
   string aggregateId = 1;
   EventType type = 2;
   Data data = 3;
   google.protobuf.StringValue eventIdOverride = 4;   // nullable
-
-  enum EventType {
-    RISK_SAVED = 0;
-    QUOTE_GENERATED = 1;
-  }
-
-  message Data {
-    oneof value {
-      RiskSavedData riskSavedData = 1;
-      QuoteGeneratedData quoteGeneratedData = 2;
-    }
-  }
-
-  message RiskSavedData {
-    string field1 = 1;
-    string field2 = 2;
-  }
-
-  message QuoteGeneratedData {
-    string field1 = 1;
-    string field2 = 2;
-  }
 }
 
 message AddEventReply {
@@ -54,5 +60,25 @@ message AddEventReply {
   }
 }
 
+enum EventType {
+  RISK_SAVED = 0;
+  QUOTE_GENERATED = 1;
+}
 
+message Data {
+  oneof value {
+    RiskSavedData riskSavedData = 1;
+    QuoteGeneratedData quoteGeneratedData = 2;
+  }
+}
+
+message RiskSavedData {
+  string field1 = 1;
+  string field2 = 2;
+}
+
+message QuoteGeneratedData {
+  string field1 = 1;
+  string field2 = 2;
+}
 
