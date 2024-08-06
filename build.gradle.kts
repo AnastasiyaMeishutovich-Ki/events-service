@@ -28,6 +28,9 @@ application {
 }
 
 dependencies {
+    implementation("io.gitlab.protobuf-tools:proto-domain-converter:1.3.1")
+    annotationProcessor("io.gitlab.protobuf-tools:proto-domain-converter:1.3.1")
+
     // Spring
     implementation(deps.bundles.spring)
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
