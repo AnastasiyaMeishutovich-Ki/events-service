@@ -1,0 +1,40 @@
+plugins {
+    id("base")
+    id("maven-publish")
+    id("com.gitlab.protobuf-tools.proto-publish") version "1.0.0"
+}
+
+repositories {
+    mavenCentral()
+}
+
+group 'com.ki.events'
+version '0.0.1-SNAPSHOT'
+
+dependencies {
+    protoPublish(project(":event-data-model"))
+}
+
+protoPublish {
+    useValidation()
+}
+
+// todo
+task protoDoc(type: ProtoDocumentationTask) {
+    addGenerateDeps(["silbertb"])
+}
+
+//publishing {
+//    publications {
+//        maven(MavenPublication) {
+//            from components.proto
+//        }
+//    }
+//
+//    // todo
+//    repositories {
+//        maven {
+//
+//        }
+//    }
+//}

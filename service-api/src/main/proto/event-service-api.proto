@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.ki.events";
+option java_outer_classname = "EventServiceApiProto";
+
+package com.ki.events.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "com/ki/events/v1/event-data.proto";
+//import "validate/validate.proto";
+
+service EventService {
+  rpc AddEvent (AddEventRequest) returns (AddEventReply) {}
+  rpc GetEvents (GetEventsRequest) returns (GetEventsReply) {}
+}
+
+message GetEventsRequest {
+  EventFilter filters = 1;
+  google.protobuf.Int32Value sequenceId = 2; // nullable
+  google.protobuf.Int32Value max = 3;  // nullable
+}
+
+message GetEventsReply {
+  repeated Event events = 1;
+}
+
+message AddEventRequest {
+  string aggregateId = 1;
+  EventType type = 2;
+  com.ki.events.v1.Data data = 3;  // [(validate.rules).message.required = true];
+  google.protobuf.StringValue eventIdOverride = 4;   // nullable
+}
+
+message AddEventReply {
+  Status status = 1;
+  google.protobuf.Int32Value sequenceId = 2;    // nullable
+  google.protobuf.Timestamp timestamp = 3;
+
+  enum Status {
+    CREATED = 0;
+    ALREADY_CREATED = 1;
+    CONFLICT = 2;
+    FAILED = 3;
+  }
+}
+
+enum EventType {
+  RISK_SAVED = 0;
+  QUOTE_GENERATED = 1;
+}
+
+message EventFilter {
+  repeated EventType type = 1;
+}
+
+message Event {
+  string source = 1;
+  string aggregate = 2;
+  string id = 3;
+  google.protobuf.Timestamp  clientCreated = 4;
+  google.protobuf.Timestamp  serverCreated = 5;
+  EventType type = 6;
+  int32 sequence = 7;
+  com.ki.events.v1.Data data = 8; //[(validate.rules).message.required = true];
+}

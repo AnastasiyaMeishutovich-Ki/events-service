@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.ki.events";
+option java_outer_classname = "EventDataProto";
+
+//import "validate/validate.proto";
+
+package com.ki.events.v1;
+
+message RiskSavedData {
+  string field1 = 1;
+  int32 field2 = 2; //  [(validate.rules).int32 = {gt:0}]
+}
+
+message QuoteGeneratedData {
+  string field1 = 1;
+  int32 field2 = 2; //  [(validate.rules).int32 = {gt:0}]
+}
+
+message Data {
+  oneof data {
+//    option (validate.required) = true;
+    RiskSavedData riskSavedData = 1;
+    QuoteGeneratedData quoteGeneratedData = 2;
+  }
+}

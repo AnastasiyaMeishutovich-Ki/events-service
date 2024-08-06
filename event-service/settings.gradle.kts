@@ -1,8 +1,4 @@
-rootProject.name = "events"
-include("event-data-model")
-include("service-api")
-include("event-service")
-
+rootProject.name = "event-service"
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"

@@ -1,0 +1,55 @@
+[versions]
+kotlin = "1.9.24"
+kotest = "5.8.1"
+protobuf = "0.9.2"
+protoc = "3.22.0"
+springboot = "3.3.2"
+grpc = "1.65.1"
+
+[libraries]
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "springboot" }
+grpc-spring-boot-starter = { module = "net.devh:grpc-spring-boot-starter", version = "3.1.0.RELEASE" }
+
+grpc-all = { module = "io.grpc:grpc-all", version.ref = "grpc" }
+grpc-services = { module = "io.grpc:grpc-services", version.ref = "grpc" }
+grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version = "1.4.1" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded", version.ref = "grpc" }
+protobuf = { module = "com.google.protobuf:protobuf-kotlin", version = "4.27.2" }
+
+grpc-testing = { module = "io.grpc:grpc-testing", version.ref = "grpc" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springboot" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+
+
+[bundles]
+spring = [
+    "spring-boot-starter",
+    "grpc-spring-boot-starter"
+]
+testing = [
+    "grpc-testing",
+    "spring-boot-starter-test",
+    "kotest-runner-junit5",
+    "kotest-assertions-core",
+]
+grpc = [
+    "protobuf",
+    "grpc-kotlin-stub",
+    "grpc-protobuf",
+    "grpc-netty-shaded",
+    "grpc-all",
+    "grpc-services"
+]
+
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+protoc = { id = "com.google.protobuf:protoc", version.ref = "protoc" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springboot" }
+spring-dep = { id = "io.spring.dependency-management", version = "1.1.6" }
+grpcjava = { id = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
+grpckotlin = { id = "io.grpc:protoc-gen-grpc-kotlin", version = "1.4.1:jdk8@jar" }
+proto-consume = { id = "com.gitlab.protobuf-tools.proto-consume", version = "1.0.0"}

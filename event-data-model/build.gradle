@@ -1,0 +1,37 @@
+plugins {
+    id("base")
+    id("maven-publish")
+    id("com.gitlab.protobuf-tools.proto-publish") version "1.0.0"
+}
+
+import org.silbertb.gradle.protopublish.ProtoDocumentationTask
+
+repositories {
+    mavenCentral()
+}
+
+group 'com.ki.events'
+version '0.0.1-SNAPSHOT'
+
+protoPublish {
+    useValidation()
+}
+
+// todo
+//task protoDoc(type: ProtoDocumentationTask) {
+//}
+//
+//publishing {
+//    publications {
+//        maven(MavenPublication) {
+//            from components.proto
+//        }
+//    }
+//
+//
+//    repositories {
+//        maven {
+//// todo
+//            }
+//        }
+// }
