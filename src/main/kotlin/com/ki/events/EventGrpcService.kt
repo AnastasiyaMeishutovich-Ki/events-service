@@ -1,37 +1,37 @@
 package com.ki.events
 
-import com.google.protobuf.Timestamp
-import com.ki.events.Events.AddEventReply
+import com.ki.events.EventsProto.AddEventReply
+import com.ki.events.EventsProto.AddEventRequest
+import com.ki.events.EventsProto.Event
+import com.ki.events.EventsProto.GetEventsReply
+import com.ki.events.EventsProto.GetEventsRequest
 import io.grpc.stub.StreamObserver
 import net.devh.boot.grpc.server.service.GrpcService
-import java.time.Instant
 
 @GrpcService
-class EventGrpcService: EventServiceGrpc.EventServiceImplBase() {
-    override fun addEvent(request: Events.AddEventRequest?, responseObserver: StreamObserver<AddEventReply>?) {
-        val currentTime = Instant.now()
-        val timestamp = Timestamp.newBuilder()
-            .setSeconds(currentTime.epochSecond)
-            .setNanos(currentTime.nano)
-            .build()
-        val reply = AddEventReply.newBuilder().setStatus(Events.AddEventReply.Status.CREATED).setTimestamp(timestamp).build()
+class EventGrpcService(private val repository: EventRepository): EventServiceGrpc.EventServiceImplBase() {
+
+
+    override fun addEvent(request: AddEventRequest, responseObserver: StreamObserver<AddEventReply>?) {
+        val event = repository.addEvent(toEventDto(request))
+
+        val timestamp = toTimestamp(event.serverCreated)
+        val reply = AddEventReply.newBuilder().setStatus(AddEventReply.Status.CREATED).setTimestamp(timestamp).build()
         if (responseObserver != null) {
             responseObserver.onNext(reply)
             responseObserver.onCompleted()
         }
     }
 
-    override fun getEvents(request: Events.GetEventsRequest?, responseObserver: StreamObserver<Events.GetEventsReply>?) {
+    override fun getEvents(request: GetEventsRequest, responseObserver: StreamObserver<GetEventsReply>?) {
 
-        var event:Events.Event
-        request?.filters?.typeList.let {
-        val riskSavedData: Events.RiskSavedData = Events.Event.newBuilder().dataBuilder.riskSavedDataBuilder.setField1("field1").setField2("field2").build()
-        val data = Events.Data.newBuilder().setRiskSavedData(riskSavedData)
-            event = Events.Event.newBuilder().setData(data).build()
-        }
+        val types = request.filters.typeList.map { it.name }
+        val events = repository.findEventsBy(types)
 
-        val reply = Events.GetEventsReply.newBuilder().addEvents(event).build()
-            if (responseObserver != null) {
+        val protoEvents: List<Event> = events.map { toEventProto(it).invoke() }
+
+        val reply = GetEventsReply.newBuilder().addAllEvents(protoEvents).build()
+        if (responseObserver != null) {
             responseObserver.onNext(reply)
             responseObserver.onCompleted()
         }

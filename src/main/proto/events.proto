@@ -1,11 +1,10 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
-//import "validate/validate.proto"; // todo?
+//import "buf/validate/validate.proto"; todo
 
 option java_package = "com.ki.events";
-option java_outer_classname = "Events";
+option java_outer_classname = "EventsProto";
 
 package com.ki.quote;
 
@@ -16,8 +15,8 @@ service EventService {
 
 message GetEventsRequest {
   EventFilter filters = 1;
-  google.protobuf.Int32Value sequenceId = 2; // nullable
-  google.protobuf.Int32Value max = 3;  // nullable
+  optional int32 sequence_id = 2;
+  optional int32 max = 3;
 }
 
 message EventFilter {
@@ -31,9 +30,9 @@ message GetEventsReply {
 message Event {
   string source = 1;
   string aggregate = 2;
-  string id = 3;
-  google.protobuf.Timestamp  clientCreated = 4;
-  google.protobuf.Timestamp  serverCreated = 5;
+  string version = 3;
+  google.protobuf.Timestamp  client_created = 4;
+  google.protobuf.Timestamp  server_created = 5;
   EventType type = 6;
   int32 sequence = 7;
   Data data = 8;
@@ -41,18 +40,21 @@ message Event {
 
 
 message AddEventRequest {
-  string aggregateId = 1;
-  EventType type = 2;
-  Data data = 3;
-  google.protobuf.StringValue eventIdOverride = 4;   // nullable
+  string aggregate_id = 1;
+  string version = 2;
+  EventType type = 3;
+  string source = 4;
+  Data data = 5;
+  optional string event_id_override = 6; //(option) .automated validation;   // nullable
 }
 
 message AddEventReply {
   Status status = 1;
-  google.protobuf.Int32Value sequenceId = 2;    // nullable
+  optional int32 sequence_id = 2;    // nullable
   google.protobuf.Timestamp timestamp = 3;
 
-  enum Status {
+  // todo change to type (with hardcoded values)
+enum Status {
     CREATED = 0;
     ALREADY_CREATED = 1;
     CONFLICT = 2;
@@ -66,19 +68,20 @@ enum EventType {
 }
 
 message Data {
-  oneof value {
-    RiskSavedData riskSavedData = 1;
-    QuoteGeneratedData quoteGeneratedData = 2;
+  oneof data {
+//    option (validate.required) = true;   todo
+    RiskSavedData risk_saved_data = 1;
+    QuoteGeneratedData quote_generated_data = 2;
   }
 }
 
 message RiskSavedData {
-  string field1 = 1;
-  string field2 = 2;
+  string field_1 = 1;
+  int32 field_2 = 2;
 }
 
 message QuoteGeneratedData {
-  string field1 = 1;
-  string field2 = 2;
+  string field_1 = 1;
+  int32 field_2 = 2;
 }
 

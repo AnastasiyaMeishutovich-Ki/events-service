@@ -37,6 +37,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+//    implementation("build.buf:protovalidate:0.2.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 
     // Testing
     testImplementation(deps.bundles.testing)
