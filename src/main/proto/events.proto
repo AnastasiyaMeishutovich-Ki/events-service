@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/descriptor.proto";
 //import "buf/validate/validate.proto"; todo
 
 option java_package = "com.ki.events";
@@ -36,6 +37,7 @@ message Event {
   EventType type = 6;
   int32 sequence = 7;
   Data data = 8;
+  string someDeprecatedField = 9 [deprecated = true];
 }
 
 
@@ -53,23 +55,26 @@ message AddEventReply {
   optional int32 sequence_id = 2;    // nullable
   google.protobuf.Timestamp timestamp = 3;
 
-  // todo change to type (with hardcoded values)
-enum Status {
-    CREATED = 0;
-    ALREADY_CREATED = 1;
-    CONFLICT = 2;
-    FAILED = 3;
+  enum Status {
+    UNSPECIFIED = 0;
+    CREATED = 1;
+    ALREADY_CREATED = 2;
+    CONFLICT = 3;
+    //  OLD_FAILED = 4;
+    reserved 4;
+    FAILED = 5;
   }
 }
 
 enum EventType {
-  RISK_SAVED = 0;
-  QUOTE_GENERATED = 1;
+  UNSPECIFIED = 0;
+  RISK_SAVED = 1;
+  QUOTE_GENERATED = 2;
 }
 
 message Data {
   oneof data {
-//    option (validate.required) = true;   todo
+    //    option (validate.required) = true;   todo
     RiskSavedData risk_saved_data = 1;
     QuoteGeneratedData quote_generated_data = 2;
   }
