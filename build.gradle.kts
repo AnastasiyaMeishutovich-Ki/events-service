@@ -1,11 +1,13 @@
-import com.google.protobuf.gradle.*
+import build.buf.gradle.CompressionFormat
+import build.buf.gradle.GENERATED_DIR
+import build.buf.gradle.ImageFormat
 
 plugins {
     alias(deps.plugins.kotlin.jvm)
-    alias(deps.plugins.protobuf)
     alias(deps.plugins.spring.boot)
     alias(deps.plugins.spring.dep)
     kotlin("plugin.spring") version "1.9.24"
+    id("build.buf") version "0.9.1"
     application
 }
 
@@ -18,6 +20,12 @@ configurations {
         extendsFrom(configurations.annotationProcessor.get())
     }
 }
+
+tasks.named("compileJava").configure { dependsOn("bufGenerate") }
+tasks.named("compileKotlin").configure { dependsOn("bufGenerate") }
+
+sourceSets["main"].java { srcDir("$buildDir/bufbuild/$GENERATED_DIR/gen/jvm") }
+sourceSets["main"].kotlin { srcDir("$buildDir/bufbuild/$GENERATED_DIR/gen/jvm") }
 
 repositories {
     mavenCentral()
@@ -35,14 +43,28 @@ dependencies {
     // gRPC
     implementation(deps.bundles.grpc)
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-//    implementation("build.buf:protovalidate:0.2.1")
+    implementation("build.buf:protovalidate:0.2.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 
     // Testing
     testImplementation(deps.bundles.testing)
     testImplementation(kotlin("test"))
+
+    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("io.grpc:grpc-protobuf:1.66.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
+    implementation("com.google.protobuf:protobuf-kotlin:3.25.3")
+    implementation("com.google.protobuf:protobuf-java:3.25.3")
+
+    if (JavaVersion.current().isJava9Compatible) {
+        // Workaround for @javax.annotation.Generated
+        // see: https://github.com/grpc/grpc-java/issues/3633
+        implementation("javax.annotation:javax.annotation-api:1.3.1")
+    }
 }
 
 kotlin {
@@ -56,30 +78,14 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-
-protobuf {
-    protoc {
-        artifact = deps.plugins.protoc.get().toString()
+buf {
+    configFileLocation = rootProject.file("buf.yaml")
+    enforceFormat = true // true by default
+    generate {
+        includeImports = true
     }
-
-    plugins {
-        id("grpc") {
-            setArtifact(deps.plugins.grpcjava.get().toString())
-        }
-        id("grpckt") {
-            setArtifact(deps.plugins.grpckotlin.get().toString())
-        }
-    }
-    generateProtoTasks {
-        all().forEach {
-            if (it.name.startsWith("generateTestProto")) {
-                it.dependsOn("jar")
-            }
-
-            it.plugins {
-                id("grpc")
-                id("grpckt")
-            }
-        }
+    build {
+        imageFormat = ImageFormat.JSON // JSON by default
+        compressionFormat = CompressionFormat.GZ // null by default (no compression)
     }
 }

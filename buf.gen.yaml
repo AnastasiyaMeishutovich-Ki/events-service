@@ -1,0 +1,24 @@
+version: v1
+managed:
+  enabled: false
+  override:
+    JAVA_OUTER_CLASSNAME:
+      events.proto: "EventsProto"
+plugins:
+  - plugin: buf.build/grpc/kotlin:v1.4.1
+    out: gen/jvm
+  # dependencies
+  - plugin: buf.build/protocolbuffers/kotlin:v25.3
+    out: gen/jvm
+  # dependencies
+  - plugin: buf.build/protocolbuffers/java:v25.3
+    out: gen/jvm
+  - plugin: buf.build/grpc/java:v1.66.0
+    out: gen/jvm
+  - plugin: buf.build/protocolbuffers/python:v25.3
+    out: gen/python
+  # dependencies
+  - plugin: buf.build/protocolbuffers/pyi
+    out: gen/python
+  - plugin: buf.build/grpc/python:v1.65.4
+    out: gen/python

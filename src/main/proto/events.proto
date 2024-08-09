@@ -2,16 +2,17 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/descriptor.proto";
-//import "buf/validate/validate.proto"; todo
+import "buf/validate/validate.proto";
 
 option java_package = "com.ki.events";
 option java_outer_classname = "EventsProto";
 
-package com.ki.quote;
+package com.ki.events;
 
 service EventService {
   rpc AddEvent (AddEventRequest) returns (AddEventReply) {}
   rpc GetEvents (GetEventsRequest) returns (GetEventsReply) {}
+  rpc GetEventsStreaming (GetEventsRequest) returns (stream Event) {}
 }
 
 message GetEventsRequest {
@@ -74,14 +75,13 @@ enum EventType {
 
 message Data {
   oneof data {
-    //    option (validate.required) = true;   todo
     RiskSavedData risk_saved_data = 1;
     QuoteGeneratedData quote_generated_data = 2;
   }
 }
 
 message RiskSavedData {
-  string field_1 = 1;
+  string field_1 = 1 [(buf.validate.field).string.min_len = 1];
   int32 field_2 = 2;
 }
 
@@ -89,4 +89,3 @@ message QuoteGeneratedData {
   string field_1 = 1;
   int32 field_2 = 2;
 }
-
