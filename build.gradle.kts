@@ -37,8 +37,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-//    implementation("build.buf:protovalidate:0.2.1")
+    implementation("io.envoyproxy.protoc-gen-validate:pgv-java-stub:0.6.13")
+
+    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("build.buf.protoc-gen-validate:pgv-java-stub:1.0.4")
 
     // Testing
     testImplementation(deps.bundles.testing)
@@ -60,6 +63,7 @@ tasks.withType<Test> {
 protobuf {
     protoc {
         artifact = deps.plugins.protoc.get().toString()
+//        generatedFilesBaseDir = "$projectDir/generated-src"
     }
 
     plugins {
@@ -69,7 +73,13 @@ protobuf {
         id("grpckt") {
             setArtifact(deps.plugins.grpckotlin.get().toString())
         }
+        id("javapgv") {
+            path = "${System.getProperty("user.home")}/.m2/repository/build/buf/protoc-gen-validate/pgv-test-coverage-report/VERSION/pgv-test-coverage-report-VERSION.jar"
+//            path = "${System.getProperty("user.home")}/Downloads/protoc-gen-validate-1.1.0/bin/"
+//            artifact = "io.envoyproxy.protoc-gen-validate:pgv-java-grpc:0.6.13"
+        }
     }
+
     generateProtoTasks {
         all().forEach {
             if (it.name.startsWith("generateTestProto")) {
@@ -79,6 +89,7 @@ protobuf {
             it.plugins {
                 id("grpc")
                 id("grpckt")
+                id("javapgv")
             }
         }
     }
