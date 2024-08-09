@@ -8,7 +8,7 @@ package com.ki.events.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
-import "com/ki/events/v1/event-data.proto";
+import "event-data.proto";
 //import "validate/validate.proto";
 
 service EventService {

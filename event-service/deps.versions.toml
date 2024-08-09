@@ -15,7 +15,7 @@ grpc-services = { module = "io.grpc:grpc-services", version.ref = "grpc" }
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version = "1.4.1" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded", version.ref = "grpc" }
-protobuf = { module = "com.google.protobuf:protobuf-kotlin", version = "4.27.2" }
+#protobuf = { module = "com.google.protobuf:protobuf-kotlin", version = "4.27.2" }
 
 grpc-testing = { module = "io.grpc:grpc-testing", version.ref = "grpc" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springboot" }
@@ -52,4 +52,4 @@ spring-boot = { id = "org.springframework.boot", version.ref = "springboot" }
 spring-dep = { id = "io.spring.dependency-management", version = "1.1.6" }
 grpcjava = { id = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpckotlin = { id = "io.grpc:protoc-gen-grpc-kotlin", version = "1.4.1:jdk8@jar" }
-proto-consume = { id = "com.gitlab.protobuf-tools.proto-consume", version = "1.0.0"}
+#proto-consume = { id = "com.gitlab.protobuf-tools.proto-consume", version = "1.0.0"}

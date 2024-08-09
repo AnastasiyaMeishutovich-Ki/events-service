@@ -1,4 +1,4 @@
-package kotlin.com.ki.events
+package com.ki.events
 
 import com.google.protobuf.Int32Value
 import net.devh.boot.grpc.client.inject.GrpcClient
@@ -20,36 +20,36 @@ class EventsApplicationTests {
 
     @Test
     fun shouldAddEvent() {
-        val riskSavedData = Events.Data.newBuilder().riskSavedDataBuilder.setField1("field1").setField2("field2").build()
-        val data = Events.Data.newBuilder().setRiskSavedData(riskSavedData)
-        val req: Events.AddEventRequest = Events.AddEventRequest.newBuilder()
+        val riskSavedData = Data.newBuilder().riskSavedDataBuilder.setField1("field1").setField2(5).build()
+        val data = Data.newBuilder().setRiskSavedData(riskSavedData)
+        val req: AddEventRequest = AddEventRequest.newBuilder()
             .setAggregateId("wjekth43jkf")
-            .setType(Events.EventType.RISK_SAVED)
+            .setType(EventType.RISK_SAVED)
             .setData(data)
             .build()
 
-        val res: Events.AddEventReply? = service?.addEvent(req)
+        val res: AddEventReply? = service?.addEvent(req)
 
         assertNotNull(res)
-        assertEquals(res.status, Events.AddEventReply.Status.CREATED)
+        assertEquals(res.status, AddEventReply.Status.CREATED)
         assertNotNull(res.timestamp)
     }
 
 
     @Test
     fun shouldGetEvents() {
-        val req: Events.GetEventsRequest = Events.GetEventsRequest.newBuilder()
-            .setFilters(Events.EventFilter.newBuilder().addTypeValue(Events.EventType.RISK_SAVED.ordinal))
+        val req: GetEventsRequest = GetEventsRequest.newBuilder()
+            .setFilters(EventFilter.newBuilder().addTypeValue(EventType.RISK_SAVED.ordinal))
             .setMax(Int32Value.of(5))
             .build()
 
-        val res: Events.GetEventsReply? = service?.getEvents(req)
+        val res: GetEventsReply? = service?.getEvents(req)
 
         assertNotNull(res)
         assertEquals(1, res.eventsList.size)
-        val event: Events.Event = res.eventsList[0]
-        assertEquals(event.getType(), Events.EventType.RISK_SAVED)
+        val event: Event = res.eventsList[0]
+        assertEquals(event.getType(), EventType.RISK_SAVED)
         assertEquals(event.data.riskSavedData.field1, "field1")
-        assertEquals(event.data.riskSavedData.field2, "field2")
+        assertEquals(event.data.riskSavedData.field2, 5)
     }
 }
