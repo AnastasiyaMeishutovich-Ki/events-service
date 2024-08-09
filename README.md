@@ -9,6 +9,8 @@ and then execute:
  buf dep update
 ```
 
+Install also the plugin to have everything wired up automatically.
+
 To generate stubs:
 ./gradlew clean build
 
