@@ -1,0 +1,56 @@
+plugins {
+    id("org.jetbrains.kotlin.jvm") version "1.9.24"
+    id("com.google.protobuf") version "0.9.2"
+}
+
+repositories {
+    mavenCentral()
+}
+
+group 'com.ki.events'
+version '0.0.1-SNAPSHOT'
+
+dependencies {
+    implementation project(':event-data-model')
+    implementation("com.google.protobuf:protobuf-kotlin:4.27.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("io.grpc:grpc-all:1.65.1")
+    implementation("io.grpc:grpc-services:1.65.1")
+    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("io.grpc:grpc-protobuf:1.65.1")
+    implementation("io.grpc:grpc-netty-shaded:1.65.1")
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.22.0"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.65.1"
+        }
+        grpckt {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
+        }
+    }
+
+    generateProtoTasks {
+        all().forEach {
+            if (it.name.startsWith("generateTestProto")) {
+                it.dependsOn("jar")
+            }
+
+            it.builtins {
+                kotlin {
+                    option 'lite'
+                }
+            }
+
+            it.plugins {
+                grpc {}
+                grpckt {}
+            }
+        }
+    }
+}
