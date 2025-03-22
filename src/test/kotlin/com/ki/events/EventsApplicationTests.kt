@@ -3,12 +3,15 @@ package com.ki.events
 import com.ki.events.EventsProto.Event
 import com.ki.events.EventsProto.EventType
 import com.ki.events.EventsProto.GetEventsRequest
+import io.grpc.StatusRuntimeException
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 
 @SpringBootTest(
@@ -35,6 +38,21 @@ class EventsApplicationTests {
         assertNotNull(res)
         assertEquals(res.status, EventsProto.AddEventReply.Status.CREATED)
         assertNotNull(res.timestamp)
+    }
+
+    @Test
+    fun shouldFailAddEvent() {
+        val riskSavedData = EventsProto.Data.newBuilder().riskSavedDataBuilder.setField1("").setField2(5).build()
+        val data = EventsProto.Data.newBuilder().setRiskSavedData(riskSavedData)
+        val req: EventsProto.AddEventRequest = EventsProto.AddEventRequest.newBuilder()
+            .setAggregateId("wjekth43jkf")
+            .setType(EventType.RISK_SAVED)
+            .setData(data)
+            .build()
+
+        assertFailsWith<StatusRuntimeException> {
+            service?.addEvent(req)
+        }
     }
 
     /**
@@ -69,6 +87,32 @@ class EventsApplicationTests {
         assertNotNull(res)
         assertEquals(1, res.eventsList.size)
         val event: Event = res.eventsList[0]
+        assertEquals(event.getType(), EventType.RISK_SAVED)
+        assertEquals(event.data.riskSavedData.field1, "field1")
+        assertEquals(event.data.riskSavedData.field2, 5)
+    }
+
+    @Test
+    fun shouldGetEventsStreaming() {
+        val riskSavedData = EventsProto.Data.newBuilder().riskSavedDataBuilder.setField1("field1").setField2(5).build()
+        val data = EventsProto.Data.newBuilder().setRiskSavedData(riskSavedData)
+        val req1: EventsProto.AddEventRequest = EventsProto.AddEventRequest.newBuilder()
+            .setAggregateId("abcd1234")
+            .setType(EventType.RISK_SAVED)
+            .setData(data)
+            .build()
+        service?.addEvent(req1)
+
+        val req: GetEventsRequest = GetEventsRequest.newBuilder()
+            .setFilters(EventsProto.EventFilter.newBuilder().addTypeValue(EventType.RISK_SAVED.ordinal))
+            .setMax(5)
+            .build()
+
+        val iterator = service?.getEventsStreaming(req)
+
+        assertNotNull(iterator)
+        assertTrue(iterator.hasNext())
+        val event: Event = iterator.next()
         assertEquals(event.getType(), EventType.RISK_SAVED)
         assertEquals(event.data.riskSavedData.field1, "field1")
         assertEquals(event.data.riskSavedData.field2, 5)
